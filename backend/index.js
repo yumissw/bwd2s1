@@ -1,7 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
-
+const morgan = require('morgan');
 dotenv.config();
 
 const userRoutes = require('./routes/userRoutes');
@@ -10,7 +10,15 @@ const eventRoutes = require('./routes/eventRoutes');
 const app = express();
 
 
+const swaggerJsDoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
 
+const swaggerConfig = require('./config/swaggerConfig');
+// инициализация Swagger
+const swaggerDocs = swaggerJsDoc(swaggerConfig);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use(morgan('dev')); // 'dev' - предустановленный формат для разработки
+    // Другие форматы: 'combined', 'common', 'short', 'tiny'
 // настройка Middleware
 app.use(express.json()); // для обработки входящих JSON-запросов
 app.use(cors()); // для разрешения запросов с других доменов

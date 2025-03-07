@@ -34,16 +34,39 @@ const createEvent = async (req, res) => {
 
 
 // Get all events
-const getEvents = async (req, res) => {
+/*const getEvents = async (req, res) => {
     try {
         const events = await Event.findAll();
         res.status(200).json(events);
     } catch (error) {
         res.status(400).json({ error: 'ошибка при получении мероприятий', details: error.message });
     }
+};*/
+
+//новое
+const getEvents = async (req, res) => {
+    try {
+        const { startDate, endDate } = req.query;
+        let whereClause = {}; // Создаем пустой объект для условий WHERE
+
+        if (startDate && endDate) {
+            // Если переданы startDate и endDate, добавляем условие для фильтрации по дате
+            whereClause = {
+                date: {
+                    [require('sequelize').Op.gte]: new Date(startDate), // >= startDate
+                    [require('sequelize').Op.lte]: new Date(endDate),   // <= endDate
+                },
+            };
+        }
+
+        const events = await Event.findAll({
+            where: whereClause, // Передаем объект с условиями в findAll
+        });
+        res.status(200).json(events);
+    } catch (error) {
+        res.status(400).json({ error: 'ошибка при получении мероприятий', details: error.message });
+    }
 };
-
-
 
 // Get a single event by ID
 const getEventById = async (req, res) => {
