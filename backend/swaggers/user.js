@@ -38,18 +38,14 @@
  *     summary: Вывести всех пользователей
  *     description: Выводит всех пользователей
  *     tags: [Users]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/User'
  *     responses:
- *       201:
+ *       200:
  *         description: Пользователи успешно выведены
  *         content:
  *           application/json:
  *             schema:
+ *               type: array
+ *               items:
  *               $ref: '#/components/schemas/User'
  *       400:
  *         description: Ошибка при выведении пользователей
@@ -57,35 +53,45 @@
 
 /**
  * @swagger
- * /users/:id:
+ * /users/{id}:
  *   get:
- *     summary: Вывести пользователей
+ *     summary: Вывести пользователя
  *     description: Выводит определенного пользователя под указанным id
  *     tags: [Users]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/User'
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID пользователя
  *     responses:
- *       201:
+ *       200:
  *         description: Пользователь успешно выведен
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/User'
+ *       404:
+ *         description: Пользователь не найден
  *       400:
  *         description: Ошибка при выведении пользователя
  */
 
 /**
  * @swagger
- * /users/:id:
+ * /users/{id}:
  *   put:
  *     summary: Обновить пользователя
  *     description: Обновляет пользователя под указанным id
  *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID пользователя
  *     requestBody:
  *       required: true
  *       content:
@@ -93,36 +99,41 @@
  *           schema:
  *             $ref: '#/components/schemas/User'
  *     responses:
- *       201:
+ *       200:
  *         description: Пользователь успешно обновлен
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/User'
+ *       404:
+ *         description: Пользователь не найден
  *       400:
  *         description: Ошибка при обновлении пользователя
  */
 
 /**
  * @swagger
- * /users/:id:
+ * /users/{id}:
  *   delete:
  *     summary: Удалить пользователя
  *     description: Удаляет пользователя под указанным id
  *     tags: [Users]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/User'
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID пользователя
  *     responses:
- *       201:
+ *       204:
  *         description: Пользователь успешно удален
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/User'
+ *       404:
+ *         description: Пользователь не найден
  *       400:
  *         description: Ошибка при удалении пользователя
  */
