@@ -7,7 +7,7 @@
 
 /**
  * @swagger
- * /events:
+ * /private/events:
  *   post:
  *     summary: Создать новое событие
  *     description: Создает новое событие с указанными данными
@@ -31,7 +31,7 @@
 
 /**
  * @swagger
- * /events:
+ * /public/events:
  *   get:
  *     summary: Вывести все события
  *     description: Выводит все события в диапазоне дат
@@ -51,7 +51,7 @@
 
 /**
  * @swagger
- * /events/{id}:
+ * /private/events/{id}:
  *   get:
  *     summary: Вывести событие
  *     description: Выводит определенное событие с указанным id
@@ -80,7 +80,7 @@
 
 /**
  * @swagger
- * /events/{id}:
+ * /private/events/{id}:
  *   put:
  *     summary: Обновить событие
  *     description: Обновляет событие под указанным id
@@ -113,7 +113,7 @@
 
 /**
  * @swagger
- * /events/{id}:
+ * /private/events/{id}:
  *   delete:
  *     summary: Удалить событие
  *     description: Удаляет событие под указанным id

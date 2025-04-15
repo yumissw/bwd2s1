@@ -6,7 +6,9 @@ dotenv.config();
 
 const userRoutes = require("./routes/userRoutes");
 const eventRoutes = require("./routes/eventRoutes");
-
+const authRoutes = require("./routes/auth.js");
+const publicRoutes = require("./routes/public.js");
+const privateRoutes = require("./routes/private.js");
 const app = express();
 
 const swaggerJsDoc = require("swagger-jsdoc");
@@ -16,6 +18,8 @@ const swaggerConfig = require("./config/swaggerConfig");
 // инициализация Swagger
 const swaggerDocs = swaggerJsDoc(swaggerConfig);
 
+const passport = require("./config/passport");
+
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use(morgan("dev")); // 'dev' - предустановленный формат для разработки
 // Другие форматы: 'combined', 'common', 'short', 'tiny'
@@ -24,6 +28,15 @@ app.use(express.json()); // для обработки входящих JSON-за
 app.use(cors()); // для разрешения запросов с других доменов
 app.use(userRoutes); // Подключение маршрутов для пользователей
 app.use(eventRoutes); // Подключение маршрутов для пользователей
+
+// Настройка Passport.js
+//configurePassport(passport); // Передаем passport в функцию настройки
+app.use(passport.initialize());
+
+// Подключение маршрутов
+app.use("/auth", authRoutes); // Подключаем роуты аутентификации
+app.use("/public", publicRoutes);
+app.use("/private", privateRoutes);
 
 // определение порта
 const PORT = process.env.PORT || 3000; // получение из конфигурации или 3000
@@ -46,6 +59,9 @@ const { authenticateDB } = require("./config/db.js");
 
 const Event = require("./models/Event");
 const User = require("./models/User");
+
+const RefreshToken = require("./models/RefreshToken");
+
 const { associate } = require("./models/associations"); // Import associations
 // Запуск сервера
 app.listen(PORT, async (err) => {
@@ -61,6 +77,7 @@ app.listen(PORT, async (err) => {
   // Синхронизация моделей
   await User.syncModel();
   await Event.syncModel();
+  await RefreshToken.syncModel();
 
   await associate();
 });

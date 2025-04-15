@@ -9,7 +9,7 @@
 
 /**
  * @swagger
- * /users:
+ * /private/users:
  *   post:
  *     summary: Создать нового пользователя
  *     description: Создает нового пользователя с указанными данными
@@ -33,7 +33,7 @@
 
 /**
  * @swagger
- * /users:
+ * /private/users:
  *   get:
  *     summary: Вывести всех пользователей
  *     description: Выводит всех пользователей
@@ -53,7 +53,7 @@
 
 /**
  * @swagger
- * /users/{id}:
+ * /private/users/{id}:
  *   get:
  *     summary: Вывести пользователя
  *     description: Выводит определенного пользователя под указанным id
@@ -80,7 +80,7 @@
 
 /**
  * @swagger
- * /users/{id}:
+ * /private/users/{id}:
  *   put:
  *     summary: Обновить пользователя
  *     description: Обновляет пользователя под указанным id
@@ -113,7 +113,7 @@
 
 /**
  * @swagger
- * /users/{id}:
+ * /private/users/{id}:
  *   delete:
  *     summary: Удалить пользователя
  *     description: Удаляет пользователя под указанным id
