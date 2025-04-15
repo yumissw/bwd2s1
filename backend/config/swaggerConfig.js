@@ -15,11 +15,17 @@ module.exports = {
     components: {
       securitySchemes: {
         ApiKeyAuth: {
-          // Обратите внимание на имя (без 'key' в конце)
           type: "apiKey",
           in: "header",
           name: "x-api-key",
           description: "API ключ для аутентификации",
+        },
+        BearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+          description:
+            "Для авторизации используйте JWT токен в формате: Bearer <ваш_токен>",
         },
       },
       schemas: {
@@ -39,6 +45,10 @@ module.exports = {
               type: "string",
               description: "Email пользователя",
             },
+            password: {
+              type: "string",
+              description: "Пароль пользователя",
+            },
             createdAt: {
               type: "string",
               format: "date-time",
@@ -52,6 +62,21 @@ module.exports = {
               readOnly: "true",
             },
           },
+        },
+        LoginRequest: {
+          // <-- Новая схема для запроса на логин
+          type: "object",
+          properties: {
+            email: {
+              type: "string",
+              description: "Email пользователя",
+            },
+            password: {
+              type: "string",
+              description: "Пароль пользователя",
+            },
+          },
+          required: ["email", "password"], // Указываем, что эти поля обязательны
         },
         Event: {
           type: "object",
@@ -89,7 +114,29 @@ module.exports = {
             createdBy: {
               type: "integer",
               description: "id пользователя",
-              readOnly: "true",
+              //readOnly: "true",
+            },
+          },
+        },
+        RefreshTokenRequest: {
+          type: "object",
+          properties: {
+            refreshToken: {
+              type: "string",
+              description: "Refresh Token для получения нового Access Token",
+              example:
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY3ODg4ODAwMH0.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            },
+          },
+          required: ["refreshToken"],
+        },
+        ErrorResponse: {
+          // Пример схемы для ошибок
+          type: "object",
+          properties: {
+            error: {
+              type: "string",
+              description: "Сообщение об ошибке",
             },
           },
         },
@@ -98,6 +145,7 @@ module.exports = {
     security: [
       {
         ApiKeyAuth: [],
+        BearerAuth: [],
       },
     ],
   },

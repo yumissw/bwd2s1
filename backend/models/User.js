@@ -1,6 +1,7 @@
 const { Model, DataTypes } = require("sequelize");
 const { sequelize } = require("../config/db"); // импортирт sequelize
 //const {Event} = require('./Event'); // импорт модели Event
+const bcrypt = require("bcryptjs");
 
 class User extends Model {}
 
@@ -18,6 +19,11 @@ User.init(
     },
     email: {
       type: DataTypes.TEXT,
+      allowNull: false,
+      unique: true, // Важно: Уникальность email
+    },
+    password: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
     createdAt: {
@@ -38,7 +44,22 @@ User.init(
     sequelize, // передача экземпляра sequelize
     modelName: "User", // имя модели
     tableName: "users", // имя таблицы в базе данных
-    timestamps: true, // включение полей createdAt и updatedAt
+    timestamps: true, // включение полей createdAt и updatedAt\
+    /*hooks: {
+      beforeCreate: async (user) => {
+        if (user.password) {
+          const salt = await bcrypt.genSalt(10);
+          user.password = await bcrypt.hash(user.password, salt);
+        }
+      },
+      beforeUpdate: async (user) => {
+        if (user.changed("password")) {
+          //Хешируем только если пароль изменился
+          const salt = await bcrypt.genSalt(10);
+          user.password = await bcrypt.hash(user.password, salt);
+        }
+      },
+    },*/
   }
 );
 
