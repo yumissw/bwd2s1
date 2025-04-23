@@ -1,20 +1,23 @@
-const express = require("express");
+import express from "express";
+import passport from "passport";
+import { apiKeyMiddleware } from "../apikey/apikey";
+
 const router = express.Router();
-const passport = require("passport");
-const { apiKeyMiddleware } = require("../apikey/apikey");
-const {
+
+import {
   createEvent,
   getEventById,
   updateEvent,
   deleteEvent,
-} = require("../controllers/eventController");
-const {
+} from "../controllers/eventController";
+
+import {
   createUser,
   getUsers,
   getUserById,
   updateUser,
   deleteUser,
-} = require("../controllers/userController");
+} from "../controllers/userController";
 
 // Middleware для защиты маршрутов
 const authenticate = passport.authenticate("jwt", { session: false });
@@ -31,4 +34,5 @@ router.get("/users/:id", authenticate, apiKeyMiddleware, getUserById);
 router.put("/users/:id", authenticate, apiKeyMiddleware, updateUser);
 router.delete("/users/:id", authenticate, apiKeyMiddleware, deleteUser);
 
-module.exports = router;
+//module.exports = router;
+export default router;

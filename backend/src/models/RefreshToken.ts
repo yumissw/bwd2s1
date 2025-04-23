@@ -1,15 +1,30 @@
-const { Model, DataTypes } = require("sequelize");
-const { sequelize } = require("../config/db"); // импортирт sequelize
+import { Model, DataTypes } from "sequelize";
+import { sequelize } from "../config/db";
 
-class RefreshToken extends Model {}
+interface RefreshTokenAttributes {
+  id: number;
+  token: string;
+  expires_at: Date;
+  userId: number;
+}
+
+class RefreshToken
+  extends Model<RefreshTokenAttributes>
+  implements RefreshTokenAttributes
+{
+  declare id: number;
+  declare token: string;
+  declare expires_at: Date;
+  declare userId: number;
+}
 
 // структура модели
 RefreshToken.init(
   {
     id: {
-      type: DataTypes.INTEGER, // тип данных
-      autoIncrement: true, // создавать автоматически
-      primaryKey: true, // первичный ключ
+      type: DataTypes.INTEGER, 
+      autoIncrement: true, 
+      primaryKey: true, 
     },
     token: {
       type: DataTypes.STRING,
@@ -20,7 +35,6 @@ RefreshToken.init(
       allowNull: false,
     },
     userId: {
-      // Связь с таблицей пользователей
       type: DataTypes.INTEGER,
       allowNull: false,
     },
@@ -28,13 +42,13 @@ RefreshToken.init(
   {
     sequelize,
     modelName: "RefreshToken",
-    tableName: "refreshTokens", //  Опционально, если хотите задать имя таблицы явно
+    tableName: "refreshTokens", 
     timestamps: true, //  Добавляет поля createdAt и updatedAt
-  }
+  },
 );
 
-// синхронизация модели с базой данных
-const syncModel = async () => {
+export default RefreshToken;
+export const syncModel = async () => {
   try {
     await RefreshToken.sync(); // создает таблицу, если она не существует
     console.log('таблица "refreshtokens" успешно синхронизирована.');
@@ -42,5 +56,3 @@ const syncModel = async () => {
     console.error('ошибка при синхронизации таблицы "refreshtokens":', error);
   }
 };
-
-module.exports = { RefreshToken, syncModel };

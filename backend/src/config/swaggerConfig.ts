@@ -1,4 +1,4 @@
-module.exports = {
+export default /*module.exports =*/ {
   definition: {
     openapi: "3.0.0",
     info: {
@@ -150,5 +150,5 @@ module.exports = {
     ],
   },
 
-  apis: ["./routes/*.js", "./swaggers/*.js"],
+  apis: ["./src/routes/*.ts", "./src/swaggers/*.ts"],
 };

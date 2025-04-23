@@ -1,12 +1,17 @@
-const { Strategy: JwtStrategy, ExtractJwt } = require("passport-jwt");
-const passport = require("passport");
-const { User } = require("../models/User");
-const dotenv = require("dotenv");
+import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
+import passport from "passport";
+import User from "../models/User.js";
+import dotenv from "dotenv";
 dotenv.config();
+
+// проверка на наличие JWT_SECRET
+if (!process.env.JWT_SECRET) {
+  throw new Error("JWT_SECRET не найден");
+}
 
 const options = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: process.env.JWT_SECRET, // Укажите ваш секретный ключ JWT в .env
+  secretOrKey: process.env.JWT_SECRET, 
 };
 
 passport.use(
@@ -21,7 +26,7 @@ passport.use(
     } catch (error) {
       return done(error, false);
     }
-  })
+  }),
 );
 
-module.exports = passport;
+export default passport;
