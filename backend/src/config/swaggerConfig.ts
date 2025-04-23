@@ -1,4 +1,4 @@
-export default /*module.exports =*/ {
+export default {
   definition: {
     openapi: "3.0.0",
     info: {

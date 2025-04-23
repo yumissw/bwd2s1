@@ -1,6 +1,6 @@
-import User from "../models/User";
-import Event from "../models/Event";
-import RefreshToken from "../models/RefreshToken";
+import User from "@models/User";
+import Event from "@models/Event";
+import RefreshToken from "@models/RefreshToken";
 import { Request, Response } from "express";
 //import * as dotenv from "dotenv";
 //dotenv.config();

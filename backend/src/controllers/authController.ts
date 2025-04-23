@@ -1,8 +1,8 @@
 import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import User from "../models/User";
-import RefreshToken from "../models/RefreshToken";
+import User from "@models/User";
+import RefreshToken from "@models/RefreshToken";
 import crypto from "crypto";
 import * as dotenv from "dotenv";
 import { Request, Response } from "express";
@@ -16,7 +16,7 @@ if (!process.env.JWT_SECRET) {
 
 const JWT_SECRET = process.env.JWT_SECRET;
 dotenv.config();
-/*router.post("/register",*/ const register =  async (req: Request, res: Response): Promise<void> => {
+  const register =  async (req: Request, res: Response): Promise<void> => {
   const { email, name, password } = req.body;
   console.log("req.body:", req.body);
 

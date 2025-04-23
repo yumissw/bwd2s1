@@ -1,6 +1,6 @@
 import express from "express";
 import passport from "passport";
-import { apiKeyMiddleware } from "../apikey/apikey";
+import { apiKeyMiddleware } from "@apikey/apikey";
 
 const router = express.Router();
 
@@ -9,7 +9,7 @@ import {
   getEventById,
   updateEvent,
   deleteEvent,
-} from "../controllers/eventController";
+} from "@controllers/eventController";
 
 import {
   createUser,
@@ -17,7 +17,7 @@ import {
   getUserById,
   updateUser,
   deleteUser,
-} from "../controllers/userController";
+} from "@controllers/userController";
 
 // Middleware для защиты маршрутов
 const authenticate = passport.authenticate("jwt", { session: false });
