@@ -24,15 +24,16 @@ interface User {
 }
 
 function Events() {
+  const [sortedEvents, setSortedEvents] = useState<Event[]>([]);
   const [apiKey] = useState<string | null>(
     localStorage.getItem("apiKey") || ""
   );
   const [events, setEvents] = useState<Event[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  //const [setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [users, setUsers] = useState<{ [key: number]: User }>({});
-  //const navigate = useNavigate();
+  const [startDate, setStartDate] = useState<string | null>(null);
+  const [endDate, setEndDate] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -52,7 +53,6 @@ function Events() {
           }
           if (!response.ok) {
             if (response.status === 401) {
-              // Не авторизован, перенаправляем на страницу входа
               window.location.href = "/login";
               return;
             }
@@ -65,7 +65,7 @@ function Events() {
     };
 
     const fetchEvents = async () => {
-      try {
+      /*try {
         const response = await fetch("http://localhost:3000/public/events");
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -74,7 +74,59 @@ function Events() {
         setEvents(data);
       } catch (error) {
         console.error("Failed to fetch events:", error);
+      }*/
+      /*try {
+        let url = "http://localhost:3000/public/events";
+        const params = new URLSearchParams();
+        if (startDate) {
+          params.append("startDate", startDate);
+        }
+        if (endDate) {
+          params.append("endDate", endDate);
+        }
+        if (params.toString()) {
+          url += `?${params.toString()}`;
+        }
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data: Event[] = await response.json();
+        setEvents(data);
+      } catch (error) {
+        console.error("Failed to fetch events:", error);
+      }*/
+      try {
+        const response = await fetch("http://localhost:3000/public/events"); // Без параметров startDate и endDate
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data: Event[] = await response.json();
+        setEvents(data);
+      } catch (error) {
+        console.error("Failed to fetch events:", error);
       }
+      /*try {
+        let url = "http://localhost:3000/public/events";
+        const params = new URLSearchParams();
+        if (startDate) {
+          params.append("startDate", startDate);
+        }
+        if (endDate) {
+          params.append("endDate", endDate);
+        }
+        if (params.toString()) {
+          url += `?${params.toString()}`;
+        }
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data: Event[] = await response.json();
+        setEvents(data);
+      } catch (error) {
+        console.error("Failed to fetch events:", error);
+      }*/
     };
 
     const fetchUsers = async () => {
@@ -108,12 +160,63 @@ function Events() {
     fetchUserData();
     fetchEvents();
     fetchUsers();
-  }, []); //navigate, events
+  }, []);
+
+  useEffect(() => {
+    if (events.length > 0) {
+      const eventsWithDateObjects = events.map((event) => ({
+        ...event,
+        date: new Date(event.date),
+      }));
+
+      const sorted = [...eventsWithDateObjects].sort((a, b) => {
+        return a.date.getTime() - b.date.getTime();
+      });
+
+      const sortedEventsWithStringDates = sorted.map((event) => ({
+        ...event,
+        date: event.date.toISOString(),
+      }));
+
+      setSortedEvents(sortedEventsWithStringDates);
+    }
+  }, [events]);
+
+  const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setStartDate(e.target.value);
+  };
+
+  const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEndDate(e.target.value);
+  };
+
+  const handleSearch = async () => {
+    try {
+      let url = "http://localhost:3000/public/events";
+      const params = new URLSearchParams();
+      if (startDate) {
+        params.append("startDate", startDate);
+      }
+      if (endDate) {
+        params.append("endDate", endDate);
+      }
+      if (params.toString()) {
+        url += `?${params.toString()}`;
+      }
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data: Event[] = await response.json();
+      setEvents(data);
+    } catch (error) {
+      console.error("Failed to fetch events:", error);
+    }
+  };
 
   const handleLogout = () => {
     removeToken();
     setUser(null);
-    //setIsLoggedIn(false);
     removeApiKey();
   };
 
@@ -172,9 +275,27 @@ function Events() {
 
       <div className={styles.container}>
         <h2 className={styles.hh1}>События</h2>
-
+        <div>
+          <input
+            type="date"
+            placeholder="Начальная дата"
+            value={startDate || ""}
+            onChange={handleStartDateChange}
+            className={styles.input}
+          />
+          <input
+            type="date"
+            placeholder="Конечная дата"
+            value={endDate || ""}
+            onChange={handleEndDateChange}
+            className={styles.input}
+          />
+          <button onClick={handleSearch} className={styles.searchButton}>
+            Поиск
+          </button>
+        </div>
         <div className={styles.eventsGrid}>
-          {events.map((event) => {
+          {sortedEvents.map((event) => {
             const dateObj = new Date(event.date);
             const formattedDate = dateObj.toLocaleDateString("ru-RU", {
               day: "2-digit",
