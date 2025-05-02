@@ -131,3 +131,24 @@
  *       500:
  *         description: Серверная ошибка
  */
+
+/**
+ * @swagger
+ * /public/me:
+ *   get:
+ *     get:
+ *     summary: Вывести пользователя
+ *     description: Выводит определенного пользователя под указанным id
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: Пользователь успешно выведен
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       404:
+ *         description: Пользователь не найден
+ *       400:
+ *         description: Ошибка при выведении пользователя
+ */

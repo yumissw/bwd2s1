@@ -1,4 +1,4 @@
-import express from "express";
+import express, { NextFunction } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "@models/User";
@@ -16,6 +16,8 @@ if (!process.env.JWT_SECRET) {
 
 const JWT_SECRET = process.env.JWT_SECRET;
 dotenv.config();
+
+
   const register =  async (req: Request, res: Response): Promise<void> => {
   const { email, name, password } = req.body;
   console.log("req.body:", req.body);
@@ -77,7 +79,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
     // Создаем JWT токен
     const payload = { id: user.id, email: user.email, name: user.name }; // Данные для токена
     const token = jwt.sign(payload, JWT_SECRET, {
-      expiresIn: "15m", // Время жизни токена (например, 1 час)
+      expiresIn: "1h", // Время жизни токена (например, 1 час)
     });
 
     const refreshToken = crypto.randomBytes(64).toString("hex"); // Генерируем случайный refresh token
@@ -155,5 +157,85 @@ const refresh = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export {register, login, refresh};
+const authenticateJWT = (req: any, res: Response, next: express.NextFunction) => {
+  const authHeader = req.headers.authorization;
+  if (authHeader) {
+    const token = authHeader.split(' ')[1]; // Bearer <token>
+    //  **Здесь должна быть ваша логика проверки токена JWT**
+    //  Например, используя библиотеку jsonwebtoken:
+    // const decoded = jwt.verify(token, yourSecretKey);
+    // req.user = decoded; // Добавляем информацию о пользователе в req.user
+    req.user = {id: 1, email: 'test@example.com', name: 'Test User'}; // Заглушка
+    next();
+  } else {
+    res.status(401).json({ message: 'Необходимо авторизоваться' });
+  }
+};
+
+const me = async (req: Request, res: Response): Promise<void>=> {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      res.json({ message: 'Вы вошли как гость' });
+      return;
+    }
+    const token = authHeader.split(' ')[1];
+
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {id: number};; // Ваш секретный ключ
+      const userId = decoded.id; // Должно быть поле id в вашем токене
+      const user = await User.findByPk(userId);
+      if (user) {
+        res.json({ email: user.email, name: user.name });
+        return;
+      } else {
+        res.status(404).json({ message: 'Пользователь не найден' });
+        return;
+      }
+    } catch (error: any) {
+      console.error("Ошибка верификации токена:", error.message);
+      if (error.name === 'TokenExpiredError') {
+          res.status(401).json({ message: 'Токен истек' });
+          return;
+      } else if (error.name === 'JsonWebTokenError') {
+          res.status(401).json({ message: 'Неверный токен' });
+          return ;
+      }
+      res.status(401).json({ message: 'Ошибка авторизации' });
+      return ;
+    }
+  } catch (error) {
+    console.error("Ошибка сервера:", error);
+    res.status(500).json({ message: 'Ошибка сервера' });
+  }
+   
+}
+
+const logout = async (req: Request, res: Response): Promise<void> => {
+  const { refreshToken } = req.body;
+
+  if (!refreshToken) {
+    res.status(400).json({ message: 'Refresh token не предоставлен' });
+    return;
+  }
+
+  try {
+    // Удалите refresh token из базы данных
+    const deletedToken = await RefreshToken.destroy({ where: { token: refreshToken } });
+
+    if (deletedToken === 0) {
+      // Если токен не найден, можно вернуть ошибку, или просто считать, что выход выполнен успешно
+      res.status(404).json({ message: 'Refresh token не найден' });
+      return;
+    }
+
+    res.json({ message: 'Выход выполнен успешно' });
+  } catch (error) {
+    console.error('Ошибка при выходе из аккаунта:', error);
+    res.status(500).json({ message: 'Ошибка сервера' });
+  }
+}
+
+
+export {register, login, refresh, me, logout};
 export default router;

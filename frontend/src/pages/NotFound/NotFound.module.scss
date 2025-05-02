@@ -1,0 +1,44 @@
+.hh1 {
+    padding-top: 20px;
+    color: rgb(212, 132, 132);
+    width: 100%;
+    font-weight: 600;
+    font-size: 44px;
+  
+  }
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .mainContent {
+    padding: 20px 0;
+  }
+  
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #fdf9f9;
+    color: #333;
+    line-height: 1.6;
+    padding-bottom: 100px;
+  }
+
+  .p1 {
+    font-size: 1.2em;   /* Задаем размер шрифта для текста */
+   
+    color: rgb(223, 176, 176);
+    width: 100%;
+    font-weight: 600;
+    font-size: 30px;
+    
+  }
+
+  .err {
+    max-width: 450px;   /* Ограничиваем максимальную ширину логотипа */
+    height: auto;        /* Автоматически подстраиваем высоту */
+  }
