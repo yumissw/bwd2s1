@@ -9,6 +9,7 @@
   background-color: #dbc2c2;
   color: white;
   z-index: 1000;
+  margin-bottom:40px;
 }
 
 .headertop {
@@ -102,7 +103,7 @@ body {
 }
 
 .linka1 {
-  color: rgb(192, 153, 153);
+  color: rgb(255, 255, 255);
   text-decoration: none;
   font-size: 20px;
   cursor: default;
@@ -155,7 +156,7 @@ form {
   margin-bottom: 20px;
 }
 
-input {
+.inputdata {
   width: 150px; /* 300px*/
   padding: 10px;
   margin-right:20px;
@@ -163,6 +164,7 @@ input {
   border: 1px solid #ccc;
   border-radius: 4px;
   color: #684141;
+  font-size:16px;
 }
 
 .searchButton {
@@ -180,3 +182,145 @@ input {
   color: white;
   background-color: rgba(212, 132, 132, 0.637);
 }
+
+@media (max-width: 1300px) {
+  .openCreateModalButton {
+    width: 250px;
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 1000px) {
+  .container {
+    overflow: auto;
+  }
+
+  .content {
+    flex-direction: column;
+    padding: 80px 10%;
+  }
+
+  .mapContainer {
+    position: visible;
+    top: auto;
+    height: 500px;
+    width: 100%;
+    align-self: auto;
+    margin: 20px, 0;
+
+    .ymaps-map {
+      width: 100% !important;
+      height: 100% !important;
+    }
+  }
+
+  .map {
+    height: 500px;
+  }
+
+  .eventsContainer {
+    margin-left: auto;
+    width: 100%;
+    overflow-y: visible;
+    overflow-x: visible;
+    max-height: calc(100vh - 60px);
+  }
+}
+
+
+
+
+@media (max-width: 800px) {
+
+
+  .eventsHeader {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .openCreateModalButton {
+    width: 100%;
+  }
+
+  .mapContainer {
+    height: 300px;
+  }
+
+  .bmcontainer {
+    position: relative; /* Важно для позиционирования меню абсолютно */
+  }
+
+  .burgerButton {
+    font-size: 2em;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5em;
+  z-index: 2; /*  Обеспечивает отображение кнопки поверх меню, когда оно открыто. */
+  }
+
+  .map {
+    height: 300px;
+  }
+}
+
+
+
+
+
+.mobileMenu {
+  position: relative; 
+  display: inline-block;
+  border-radius: 8px;
+}
+
+.burgerButton {
+  background-color: #dbc2c2;
+  color: #ffffff;
+  padding: 0px 16px;
+  border: none;
+  cursor: pointer;
+
+width: 40px;
+height: 40px;
+  font-size: 40px;
+}
+
+.mobileMenuContent {
+  position: absolute;
+  background-color: #ffffff;
+  width: 300px;
+ 
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  
+}
+
+.linka2 {
+  color: rgb(212, 132, 132);
+  padding: 8px 16px;
+  text-decoration: underline;
+  display: block;
+  font-size: 20px;
+  text-align: left;
+  border: none;
+  background-color: #ffffff;
+}
+
+.linka3 {
+  color: rgb(212, 132, 132);
+  padding: 8px 16px;
+  text-decoration: none;
+  display: block;
+  font-size: 20px;
+  text-align: left;
+  border: none;
+  background-color: #ffffff;
+  cursor: default;
+}
+
+.dropdownLink:hover {
+  background-color: #f3ebeb;
+}
+
+

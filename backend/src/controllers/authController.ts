@@ -79,7 +79,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
     // Создаем JWT токен
     const payload = { id: user.id, email: user.email, name: user.name }; // Данные для токена
     const token = jwt.sign(payload, JWT_SECRET, {
-      expiresIn: "1h", // Время жизни токена (например, 1 час)
+      expiresIn: "3h", // Время жизни токена (например, 1 час)
     });
 
     const refreshToken = crypto.randomBytes(64).toString("hex"); // Генерируем случайный refresh token
@@ -186,7 +186,7 @@ const me = async (req: Request, res: Response): Promise<void>=> {
       const userId = decoded.id; // Должно быть поле id в вашем токене
       const user = await User.findByPk(userId);
       if (user) {
-        res.json({ email: user.email, name: user.name });
+        res.json({id: user.id, email: user.email, name: user.name });
         return;
       } else {
         res.status(404).json({ message: 'Пользователь не найден' });

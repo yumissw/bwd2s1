@@ -1,0 +1,86 @@
+
+ /* Стили для модального окна */
+ .modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный фон */
+  display: flex;
+ 
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Убедитесь, что окно поверх всего */
+}
+
+.modal {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  width: 500px; /* Или другая ширина по вашему вкусу */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  
+}
+
+.closeb {
+  border:none;
+  background-color: white;
+  cursor: pointer;
+}
+
+.cb {
+  display: flex;
+  justify-content: right;
+  //align-items: center;
+  border: none;
+
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-around;
+  //align-items: center;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ffffff;
+  padding-bottom: px;
+  
+}
+
+.h2modal {
+  text-align: center;
+  font-size: 35px;
+  align-items: center;
+ 
+  color: rgb(212, 132, 132);
+}
+
+.modalInner {
+  
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  align-items: right;
+}
+
+.modalContent {
+  /* Стили для формы (если нужно) */
+}
+
+.createEventButton {
+ background-color: #4CAF50; /* Green */
+ border: none;
+ color: white;
+ padding: 10px 20px;
+ text-align: center;
+ text-decoration: none;
+ display: inline-block;
+ font-size: 16px;
+ margin: 4px 2px;
+ cursor: pointer;
+ border-radius: 5px;
+}

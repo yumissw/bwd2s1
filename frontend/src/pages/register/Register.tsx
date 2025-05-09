@@ -1,4 +1,4 @@
-import { useState } from "react";
+/*import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { register } from "../../api/authService";
 
@@ -25,13 +25,57 @@ function Register() {
     } catch (err: any) {
       setError(err.message || "Registration failed");
     }
+  };*/
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+
+import styles from "./Register.module.scss";
+
+import {
+  register,
+  resetRegisterState,
+} from "../../features/auth/registerSlice";
+
+function Register() {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const { isLoading, isError } = useAppSelector((state) => state.register);
+
+  // cброс состояния при размонтировании
+  useEffect(() => {
+    return () => {
+      dispatch(resetRegisterState());
+    };
+  }, [dispatch]);
+
+  const handleRegister = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    dispatch(
+      register({
+        name,
+        email,
+        password,
+      })
+    )
+      .unwrap()
+      .then(() => {
+        setTimeout(() => navigate("/login"), 1500);
+      });
   };
 
   return (
     <div className={styles.dialog}>
       <h2 className={styles.h2Log}>Регистрация</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <form onSubmit={handleSubmit}>
+      {/*} {error && <p style={{ color: "red" }}>{error}</p>}*/}
+      <form onSubmit={handleRegister}>
         <div>
           <input
             type="email"
@@ -62,7 +106,7 @@ function Register() {
             className={styles.input}
           />
         </div>
-        <div>
+        {/*<div>
           <input
             type="password"
             placeholder="Подтвердить пароль"
@@ -71,10 +115,14 @@ function Register() {
             required
             className={styles.input}
           />
-        </div>
+        </div>*/}
 
-        <button type="submit">Регистрация</button>
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? "Загрузка..." : "Регистрация"}
+        </button>
       </form>
+
+      {isError && <p className={styles.message}>ошибка при регистрации</p>}
 
       <div>
         <span>Уже есть аккаунт?</span>

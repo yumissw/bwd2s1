@@ -1,227 +1,70 @@
 import { useState, useEffect } from "react";
 import { Link /*useNavigate*/ } from "react-router-dom";
+import { fetchUserData, fetchUsers } from "../../api/userService";
+import { fetchEvents } from "../../api/eventService";
 import {
-  getToken,
+  //getToken,
   removeToken,
   removeApiKey,
 } from "../../utils/localStorageUtils";
 import styles from "./Events.module.scss";
 import logo from "../../images/l1.png";
-
-interface Event {
-  id: number;
-  title: string;
-  description: string;
-  date: string;
-  createdBy: number;
-}
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  password: string;
-}
+import { User } from "../../types/userTypes";
+import { useEventSortingAndFiltering } from "../../api/eventsFilter";
 
 function Events() {
-  const [sortedEvents, setSortedEvents] = useState<Event[]>([]);
   const [apiKey] = useState<string | null>(
     localStorage.getItem("apiKey") || ""
   );
-  const [events, setEvents] = useState<Event[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [users, setUsers] = useState<{ [key: number]: User }>({});
-  const [startDate, setStartDate] = useState<string | null>(null);
-  const [endDate, setEndDate] = useState<string | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
+  const {
+    //events,
+    setEvents,
+    sortedEvents,
+    startDate,
+    endDate,
+    handleStartDateChange,
+    handleEndDateChange,
+    handleSearch,
+  } = useEventSortingAndFiltering();
+
+  //загрузка данных
   useEffect(() => {
-    const fetchUserData = async () => {
-      const token = getToken();
-      if (token) {
-        try {
-          const response = await fetch("http://localhost:3000/public/me", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          const data = await response.json();
-          if (data.message === "Вы вошли как гость") {
-            setUser({ message: data.message });
-          } else {
-            setUser(data);
-          }
-          if (!response.ok) {
-            if (response.status === 401) {
-              window.location.href = "/login";
-              return;
-            }
-            throw new Error(`Ошибка HTTP: ${response.status}`);
-          }
-        } catch (error) {
-          console.error("Ошибка при получении данных пользователя:", error);
-        }
-      }
+    fetchUserData(setUser); //загрузка данных пользователя
+    fetchEvents(setEvents); //загрузка событий
+    fetchUsers(setUsers, apiKey); //загрузка пользователей
+  }, [apiKey, setEvents]);
+
+  //изменение ширины страницы
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
     };
 
-    const fetchEvents = async () => {
-      /*try {
-        const response = await fetch("http://localhost:3000/public/events");
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        setEvents(data);
-      } catch (error) {
-        console.error("Failed to fetch events:", error);
-      }*/
-      /*try {
-        let url = "http://localhost:3000/public/events";
-        const params = new URLSearchParams();
-        if (startDate) {
-          params.append("startDate", startDate);
-        }
-        if (endDate) {
-          params.append("endDate", endDate);
-        }
-        if (params.toString()) {
-          url += `?${params.toString()}`;
-        }
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data: Event[] = await response.json();
-        setEvents(data);
-      } catch (error) {
-        console.error("Failed to fetch events:", error);
-      }*/
-      try {
-        const response = await fetch("http://localhost:3000/public/events"); // Без параметров startDate и endDate
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data: Event[] = await response.json();
-        setEvents(data);
-      } catch (error) {
-        console.error("Failed to fetch events:", error);
-      }
-      /*try {
-        let url = "http://localhost:3000/public/events";
-        const params = new URLSearchParams();
-        if (startDate) {
-          params.append("startDate", startDate);
-        }
-        if (endDate) {
-          params.append("endDate", endDate);
-        }
-        if (params.toString()) {
-          url += `?${params.toString()}`;
-        }
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data: Event[] = await response.json();
-        setEvents(data);
-      } catch (error) {
-        console.error("Failed to fetch events:", error);
-      }*/
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
     };
-
-    const fetchUsers = async () => {
-      try {
-        const token = getToken();
-        const response = await fetch("http://localhost:3000/private/users", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "x-api-key": apiKey || "",
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`Ошибка HTTP: ${response.status}`);
-        }
-        const data: User[] = await response.json();
-
-        const usersObject: { [key: number]: User } = {};
-        data.forEach((user) => {
-          usersObject[user.id] = user;
-        });
-
-        setUsers(usersObject);
-        console.log("Users object loaded:", usersObject);
-      } catch (error) {
-        console.error("Failed to fetch users:", error);
-      }
-    };
-
-    fetchUserData();
-    fetchEvents();
-    fetchUsers();
   }, []);
 
-  useEffect(() => {
-    if (events.length > 0) {
-      const eventsWithDateObjects = events.map((event) => ({
-        ...event,
-        date: new Date(event.date),
-      }));
-
-      const sorted = [...eventsWithDateObjects].sort((a, b) => {
-        return a.date.getTime() - b.date.getTime();
-      });
-
-      const sortedEventsWithStringDates = sorted.map((event) => ({
-        ...event,
-        date: event.date.toISOString(),
-      }));
-
-      setSortedEvents(sortedEventsWithStringDates);
-    }
-  }, [events]);
-
-  const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setStartDate(e.target.value);
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEndDate(e.target.value);
-  };
-
-  const handleSearch = async () => {
-    try {
-      let url = "http://localhost:3000/public/events";
-      const params = new URLSearchParams();
-      if (startDate) {
-        params.append("startDate", startDate);
-      }
-      if (endDate) {
-        params.append("endDate", endDate);
-      }
-      if (params.toString()) {
-        url += `?${params.toString()}`;
-      }
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data: Event[] = await response.json();
-      setEvents(data);
-    } catch (error) {
-      console.error("Failed to fetch events:", error);
-    }
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
   };
 
   const handleLogout = () => {
     removeToken();
     setUser(null);
     removeApiKey();
-  };
-
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
   };
 
   return (
@@ -233,41 +76,100 @@ function Events() {
             <img src={logo} alt="Логотип" className={styles.contentImage} />
           </Link>
 
-          <Link to="#" className={styles.linka1}>
-            События
-          </Link>
-          {user?.email ? (
-            <div className={styles.userDropdown}>
-              <button
-                className={styles.dropdownButton}
-                onClick={toggleDropdown}
-              >
-                Вы вошли как: {user?.email || "Гость"}
-              </button>
-              {isDropdownOpen && (
-                <div className={styles.dropdownContent}>
-                  <Link to="/profile" className={styles.dropdownLink}>
-                    Профиль
-                  </Link>
-                  <Link
-                    to="/events"
-                    onClick={handleLogout}
-                    className={styles.dropdownLink}
-                  >
-                    Выйти
-                  </Link>
-                </div>
-              )}
-            </div>
-          ) : (
+          {/* Mobile-версия */}
+          {windowWidth <= 768 && (
             <>
-              <Link to="/login" className={styles.linka}>
-                Авторизация
+              <div className={styles.mobileMenu}>
+                <button
+                  className={styles.burgerButton}
+                  onClick={toggleMobileMenu}
+                >
+                  {isMobileMenuOpen ? "x" : "☰"}
+                  {/*☰*/}
+                </button>
+
+                {isMobileMenuOpen && (
+                  <div className={styles.mobileMenuContent}>
+                    {user?.email ? (
+                      <>
+                        <Link to="/profile" className={styles.dropdownLink}>
+                          Вы: {user?.name || "Гость"}
+                        </Link>
+                        <Link to="/events" className={styles.linka3}>
+                          События
+                        </Link>
+                        <Link
+                          to="/events"
+                          onClick={handleLogout}
+                          className={styles.dropdownLink}
+                        >
+                          Выйти
+                        </Link>
+                      </>
+                    ) : (
+                      <>
+                        <Link to="#" className={styles.linka3}>
+                          Вы: Гость
+                        </Link>
+                        <Link to="#" className={styles.linka3}>
+                          События
+                        </Link>
+                        <Link to="/login" className={styles.dropdownLink}>
+                          Авторизация
+                        </Link>
+                        <Link to="/register" className={styles.dropdownLink}>
+                          Регистрация
+                        </Link>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+
+          {/* Desktop-версия */}
+          {windowWidth > 768 && (
+            <>
+              <Link to="#" className={styles.linka1}>
+                События
               </Link>
-              <Link to="/register" className={styles.linka}>
-                Регистрация
-              </Link>
-              <p className={styles.p1}> Вы вошли как:'Гость'</p>
+              {user?.email ? (
+                <div className={styles.userDropdown}>
+                  <button
+                    className={styles.dropdownButton}
+                    onClick={toggleDropdown}
+                  >
+                    Вы вошли как: {user?.email || "Гость"}
+                  </button>
+                  {isDropdownOpen && (
+                    <div className={styles.dropdownContent}>
+                      <Link to="/profile" className={styles.dropdownLink}>
+                        Профиль
+                      </Link>
+                      <Link
+                        to="/events"
+                        onClick={handleLogout}
+                        className={styles.dropdownLink}
+                      >
+                        Выйти
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <>
+                  <Link to="/login" className={styles.linka}>
+                    Авторизация
+                  </Link>
+                  <Link to="/register" className={styles.linka}>
+                    Регистрация
+                  </Link>
+                  <Link to="#" className={styles.linka1}>
+                    Вы вошли как: Гость
+                  </Link>
+                </>
+              )}
             </>
           )}
         </div>
@@ -281,19 +183,20 @@ function Events() {
             placeholder="Начальная дата"
             value={startDate || ""}
             onChange={handleStartDateChange}
-            className={styles.input}
+            className={styles.inputdata}
           />
           <input
             type="date"
             placeholder="Конечная дата"
             value={endDate || ""}
             onChange={handleEndDateChange}
-            className={styles.input}
+            className={styles.inputdata}
           />
           <button onClick={handleSearch} className={styles.searchButton}>
             Поиск
           </button>
         </div>
+
         <div className={styles.eventsGrid}>
           {sortedEvents.map((event) => {
             const dateObj = new Date(event.date);
