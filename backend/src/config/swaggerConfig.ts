@@ -45,6 +45,27 @@ export default {
               type: "string",
               description: "Email пользователя",
             },
+            lastName: {
+              type: "string",
+              description: "Пароль пользователя",
+            },
+            firstName: {
+              type: "string",
+              description: "Пароль пользователя",
+            },
+            patronymic: {
+              type: "string",
+              description: "Пароль пользователя",
+            },
+            gender: {
+              type: "string",
+              description: "Пароль пользователя",
+            },
+            dateOfBirth: {
+              type: "string",
+              description: "Пароль пользователя",
+            },
+           
             password: {
               type: "string",
               description: "Пароль пользователя",

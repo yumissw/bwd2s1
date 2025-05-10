@@ -2,8 +2,11 @@ import User from "@models/User";
 import Event from "@models/Event";
 import RefreshToken from "@models/RefreshToken";
 import { Request, Response } from "express";
+import { use } from "passport";
 //import * as dotenv from "dotenv";
 //dotenv.config();
+import bcrypt from "bcryptjs";
+const saltRounds = 10;
 
 const createUser = async (req: Request, res: Response): Promise<void> => {
   const { name, email } = req.body;
@@ -69,10 +72,24 @@ const getUserById = async (req: Request, res: Response): Promise<void> => {
     });
   }
 };
-
-const updateUser = async (req: Request, res: Response): Promise<void> => {
-  const { name, email } = req.body;
-
+const hashPassword = async (plainPassword: string) => {
+  if (!plainPassword || typeof plainPassword !== "string") {
+    throw new Error("пароль должен быть непустой строкой");
+  }
+  try {
+    const salt = await bcrypt.genSalt(saltRounds);
+    return await bcrypt.hash(plainPassword, salt);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    }
+    throw new Error("ошибка при хешировании пароля");
+  }
+};
+/*const updateUser = async (req: Request, res: Response): Promise<void> => {
+  const { name, email, lastName, firstName, patronymic, gender, dateOfBirth } = req.body;
+  console.log(req.body.dateOfBirth)
+  console.log("ААААА ааааа", req.body);
   try {
     // проверка уникальности email
     const existingUser = await User.findOne({ where: { email } });
@@ -101,6 +118,26 @@ const updateUser = async (req: Request, res: Response): Promise<void> => {
     }
 
     res.status(200).json(updatedUser);
+  } catch (error) {
+    res.status(400).json({
+      error: "ошибка при обновлении пользователя",
+      details: (error as Error).message,
+    });
+  }
+
+};*/
+
+const updateUser = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const [updated] = await User.update(req.body, {
+      where: { id: req.params.id },
+    });
+    if (!updated) {
+      res.status(404).json({ error: "пользователь не найден" });
+      return;
+    }
+    const updatedEvent = await User.findByPk(req.params.id);
+    res.status(200).json(updatedEvent);
   } catch (error) {
     res.status(400).json({
       error: "ошибка при обновлении пользователя",

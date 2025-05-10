@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { login as loginAPI, register as registerAPI} from "../../api/authService";
+import { login as loginAPI} from "../../api/authService";
 import { jwtDecode } from "jwt-decode";
 import { PayloadAction } from "@reduxjs/toolkit";
 
@@ -99,35 +99,6 @@ export const login = createAsyncThunk(
   },*/
 
 
-);
-
-export const register = createAsyncThunk(
-  "auth/register",
-  async (
-    {
-      email,
-      name,
-      password,
-    }: {
-        email: string;
-      name: string;
-     
-      
-      password: string;
-    },
-    thunkAPI,
-  ) => {
-    try {
-      const response = await registerAPI(
-        email,
-        name,
-        password,
-      );
-      return response;
-    } catch (error) {
-      return thunkAPI.rejectWithValue("ошибка при регистрации");
-    }
-  },
 );
 
 /*const authSlice = createSlice({

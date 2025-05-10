@@ -262,7 +262,7 @@
     }
   
     .bmcontainer {
-      position: relative; /* Важно для позиционирования меню абсолютно */
+      position: relative; 
     }
   
     .burgerButton {
@@ -271,7 +271,7 @@
     border: none;
     cursor: pointer;
     padding: 0.5em;
-    z-index: 2; /*  Обеспечивает отображение кнопки поверх меню, когда оно открыто. */
+    z-index: 2; 
     }
   
     .map {

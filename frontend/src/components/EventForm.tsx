@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { Event } from "../types/eventTypes"; // Путь к вашим типам
+import { Event } from "../types/eventTypes";
 import styles from "./Modal.module.scss";
 
 interface EventFormProps {
@@ -62,7 +62,7 @@ const EventForm: React.FC<EventFormProps> = ({
         <input
           type="text"
           id="title"
-          placeholder="Название:" // Label перенесен сюда
+          placeholder="Название:"
           {...register("title")}
         />
         {errors.title && (
@@ -73,7 +73,7 @@ const EventForm: React.FC<EventFormProps> = ({
       <div>
         <input
           id="description"
-          placeholder="Описание:" // Label перенесен сюда
+          placeholder="Описание:"
           {...register("description")}
         />
         {errors.description && (
@@ -85,7 +85,7 @@ const EventForm: React.FC<EventFormProps> = ({
         <input
           type="date"
           id="date"
-          placeholder="Дата:" // Label перенесен сюда
+          placeholder="Дата:"
           {...register("date", { valueAsDate: true })}
         />
         {errors.date && <p className="error-message">{errors.date?.message}</p>}

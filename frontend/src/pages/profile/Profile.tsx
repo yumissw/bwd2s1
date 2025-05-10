@@ -18,11 +18,11 @@ import {
 } from "../../api/eventService";
 
 import { useEventSortingAndFiltering } from "../../api/eventsFilter";
-import { fetchUserData, fetchUsers } from "../../api/userService";
+import { fetchUserData, fetchUsers, updateUser } from "../../api/userService";
 
 import Modal from "../../components/Modal";
 import EventForm from "../../components/EventForm";
-
+import UserForm from "../../components/UserForm";
 import styles from "./Profile.module.scss";
 import logo from "../../images/l1.png";
 
@@ -40,12 +40,25 @@ function Profile() {
   const { events, setEvents, sortedEvents } = useEventSortingAndFiltering();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  //const [userss, setUserss] = useState<User[]>([]);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     fetchUserData(setUser); //загрузка данных пользователя
     fetchEvents(setEvents); //загрузка событий
     fetchUsers(setUsers, apiKey); //загрузка пользователей
   }, [apiKey]);
+
+  const openEditModal = (user: User) => {
+    setSelectedUser(user);
+    setIsEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+    setSelectedUser(null);
+  };
 
   const openCreateModal = () => {
     setIsCreateModalOpen(true);
@@ -126,10 +139,26 @@ function Profile() {
     }
   };
 
+  const handleUpdateUser = async (data: Omit<User, "id" | "password">) => {
+    if (!selectedUser) return;
+
+    try {
+      const userData: Omit<User, "id" | "password"> = { ...data };
+      await updateUser(selectedUser.id, userData);
+      //const updatedUser = await updateUser(selectedUser.id, data);
+      //setUserss(userss.map((u) => (u.id === updatedUser.id ? updatedUser : u)));
+      closeEditModal();
+    } catch (error) {
+      console.error("Update failed:", error);
+      alert(
+        `Ошибка обновления: ${error instanceof Error ? error.message : "Неизвестная ошибка"}`
+      );
+    }
+  };
   const handleUpdateEvent = async (data: Omit<Event, "id" | "createdBy">) => {
     if (!selectedEvent) return;
     try {
-      const createdBy = user.id;
+      //const createdBy = user.id;
       const eventData: Omit<Event, "id" | "createdBy"> = { ...data }; // Редактирование
       await updateEvent(selectedEvent.id, eventData);
       closeManageModal();
@@ -160,6 +189,19 @@ function Profile() {
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const getGender = (gender: string) => {
+    switch (gender) {
+      case "male":
+        return "мужской";
+      case "female":
+        return "женский";
+      case "other":
+        return "другой";
+      default:
+        return "не указано";
+    }
   };
 
   return (
@@ -276,14 +318,56 @@ function Profile() {
           <div className={styles.profileInfo}>
             {user ? (
               <>
-                <p>Имя: {user.name || "Неизвестно"}</p>
+                <p>Имя пользователя: {user.name || "Неизвестно"}</p>
                 <p>Email: {user.email || "Неизвестно"}</p>
+                <p>Фамилия: {user.lastName || "Неизвестно"}</p>
+                <p>Имя: {user.firstName || "Неизвестно"}</p>
+                <p>Отчество: {user.patronymic || "Неизвестно"}</p>
+                <p>
+                  Пол: {/*{user.gender || "Неизвестно"}*/}
+                  {getGender(user.gender)}
+                </p>
+                <p>
+                  Дата рождения: {/*{user.dateOfBirth || "Неизвестно"}*/}{" "}
+                  {new Date(user.dateOfBirth).toLocaleDateString()}
+                </p>
               </>
             ) : (
               <p>Информация о пользователе не доступна.</p>
             )}
+            <div className={styles.forEditButton}>
+              <button
+                onClick={() => openEditModal(user)}
+                className={styles.createb}
+              >
+                Управление пользователем
+              </button>
+            </div>
           </div>
 
+          <Modal
+            isOpen={isEditModalOpen}
+            onClose={closeEditModal}
+            title="Управление пользователем"
+          >
+            {selectedUser && (
+              <div>
+                <UserForm
+                  initialValues={{
+                    name: selectedUser.name,
+                    email: selectedUser.email,
+                    lastName: selectedUser.lastName,
+                    firstName: selectedUser.firstName,
+                    patronymic: selectedUser.patronymic,
+                    gender: selectedUser.gender,
+                    dateOfBirth: selectedUser.dateOfBirth,
+                  }}
+                  onSubmit={handleUpdateUser}
+                  onCancel={closeEditModal}
+                />
+              </div>
+            )}
+          </Modal>
           {/* Modal для создания */}
           <Modal
             isOpen={isCreateModalOpen}
@@ -308,7 +392,7 @@ function Profile() {
                   initialValues={{
                     title: selectedEvent.title,
                     description: selectedEvent.description,
-                    date: selectedEvent.date,
+                    date: new Date(selectedEvent.date),
                   }}
                   onSubmit={handleUpdateEvent}
                   onCancel={closeManageModal}
@@ -337,9 +421,7 @@ function Profile() {
               <div className={styles.eventsGrid}>
                 {sortedEvents
                   .filter(
-                    (event) =>
-                      user && // Убеждаемся, что user не null
-                      user.id === event.createdBy // Сравниваем user.id и event.createdBy
+                    (event) => user && user.id === event.createdBy // Сравниваем user.id и event.createdBy
                   )
                   .map((event) => {
                     const dateObj = new Date(event.date);
@@ -366,8 +448,8 @@ function Profile() {
                         <p>{event.description}</p>
                         <p>Дата: {formattedDate}</p>
                         <p>
-                          Создал: {event.createdBy}{" "}
-                          {createdByUserr ? user.name : "Неизвестный"}
+                          Создал: {createdByUserr ? user.name : "Неизвестный"}{" "}
+                          (Вы)
                           <button
                             className={styles.upr}
                             onClick={() => openManageModal(event)}

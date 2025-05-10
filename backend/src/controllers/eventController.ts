@@ -33,10 +33,10 @@ const createEvent = async (req: Request, res: Response): Promise<void> => {
 const getEvents = async (req: Request, res: Response): Promise<void> => {
   try {
     const { startDate, endDate } = req.query;
-    let whereClause = {}; // Создаем пустой объект для условий WHERE
+    let whereClause = {}; 
 
     if (startDate && endDate) {
-      // Если переданы startDate и endDate, добавляем условие для фильтрации по дате
+     
       const startDateStr = startDate as string;
       const endDateStr = endDate as string;
 
@@ -56,7 +56,7 @@ const getEvents = async (req: Request, res: Response): Promise<void> => {
     }
 
     const events = await Event.findAll({
-      where: whereClause, // Передаем объект с условиями в findAll
+      where: whereClause, 
     });
     res.status(200).json(events);
   } catch (error) {

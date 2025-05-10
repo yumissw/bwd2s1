@@ -4,6 +4,12 @@ interface UserAttributes {
   id: number;
   name: string;
   email: string;
+  
+  lastName: string;
+  firstName: string;
+  patronymic: string;
+  gender: 'male' | 'female' | 'other'; 
+  dateOfBirth: Date;
   password: string;
   createdAt: Date;
   updatedAt: Date;
@@ -13,6 +19,11 @@ class User extends Model<UserAttributes> implements UserAttributes {
   declare id: number;
   declare name: string;
   declare email: string;
+  declare lastName: string;
+  declare firstName: string;
+  declare patronymic: string;
+  declare gender: 'male' | 'female' | 'other'; 
+  declare dateOfBirth: Date;
   declare password: string;
   declare createdAt: Date;
   declare updatedAt: Date;
@@ -34,6 +45,26 @@ User.init(
       type: DataTypes.TEXT,
       allowNull: false,
       unique: true, 
+    },
+    lastName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    firstName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    patronymic:{
+      type: DataTypes.STRING,
+            allowNull: false,
+    },
+    gender: {
+      type: DataTypes.ENUM('male', 'female', 'other'),
+      allowNull: false,
+    },
+    dateOfBirth: {
+      type: DataTypes.DATE,
+      allowNull: false,
     },
     password: {
       type: DataTypes.STRING,

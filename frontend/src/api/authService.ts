@@ -6,6 +6,8 @@ const api = axios.create({
   baseURL: BASE_URL,
 });
 
+type Gender = "male" | "female" | "other" | "not specified";
+
 export const login = async (email: string, password: string) => {
   try {
     const response = await api.post("/auth/login", { email, password });
@@ -18,12 +20,22 @@ export const login = async (email: string, password: string) => {
 export const register = async (
   email: string,
   name: string,
+  lastName: string,
+  firstName: string,
+  patronymic: string,
+  gender: Gender,
+  dateOfBirth: Date,
   password: string,
 ) => {
   try {
     const response = await api.post("/auth/register", {
       email,
       name,
+      lastName,
+  firstName,
+  patronymic,
+  gender,
+  dateOfBirth,
       password,
     });
     return response.data;

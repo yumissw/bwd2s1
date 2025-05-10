@@ -178,6 +178,7 @@ function Events() {
       <div className={styles.container}>
         <h2 className={styles.hh1}>События</h2>
         <div>
+          <label>Начальная дата </label>
           <input
             type="date"
             placeholder="Начальная дата"
@@ -185,6 +186,7 @@ function Events() {
             onChange={handleStartDateChange}
             className={styles.inputdata}
           />
+          <label>Конечная дата </label>
           <input
             type="date"
             placeholder="Конечная дата"

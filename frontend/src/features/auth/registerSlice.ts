@@ -1,9 +1,14 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { register as registerAPI} from "../../api/authService";
-
+type Gender = "male" | "female" | "other" | "not specified";
 interface RegisterPayload {
   name: string;
   email: string;
+  lastName: string,
+  firstName: string,
+  patronymic: string,
+  gender: Gender,
+  dateOfBirth: Date,
   password: string;
 }
 
@@ -26,6 +31,11 @@ export const register = createAsyncThunk(
       const response = await registerAPI(
         data.email,
         data.name,
+        data.lastName,
+        data.firstName,
+        data.patronymic,
+        data.gender,
+        data.dateOfBirth,
         data.password,
       );
       return response;

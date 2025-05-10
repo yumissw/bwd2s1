@@ -6,7 +6,6 @@ import RefreshToken from "@models/RefreshToken";
 import crypto from "crypto";
 import * as dotenv from "dotenv";
 import { Request, Response } from "express";
-// загрузка конфигурации из .env файла
 
 const router = express.Router();
 // проверка на наличие JWT_SECRET
@@ -17,12 +16,20 @@ if (!process.env.JWT_SECRET) {
 const JWT_SECRET = process.env.JWT_SECRET;
 dotenv.config();
 
-
-  const register =  async (req: Request, res: Response): Promise<void> => {
-  const { email, name, password } = req.body;
+const register = async (req: Request, res: Response): Promise<void> => {
+  const {
+    email,
+    name,
+    lastName,
+    firstName,
+    patronymic,
+    gender,
+    dateOfBirth,
+    password,
+  } = req.body;
   console.log("req.body:", req.body);
 
-  if (!email || !name || !password) {
+  if (!email || !name || !password || !lastName || !firstName || !patronymic || !gender || !dateOfBirth) {
     res.status(400).json({ message: "Заполните все поля" });
     return;
   }
@@ -115,7 +122,6 @@ const refresh = async (req: Request, res: Response): Promise<void> => {
   }
 
   try {
-    // 1. Ищем Refresh Token в базе данных
     const refreshTokenRecord = await RefreshToken.findOne({
       where: { token: refreshToken },
     });
@@ -125,31 +131,25 @@ const refresh = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    // 2. Проверяем, не истек ли срок действия Refresh Token
     if (refreshTokenRecord.expires_at < new Date()) {
-      // Удаляем устаревший Refresh Token из базы данных
       await refreshTokenRecord.destroy();
       res.status(401).json({ message: "Срок действия Refresh Token истек" });
       return;
     }
 
-    // 3. Получаем ID пользователя из Refresh Token
     const userId = refreshTokenRecord.userId;
 
-    // 4. Находим пользователя в базе данных (Опционально, но рекомендуется)
     const user = await User.findOne({ where: { id: userId } });
     if (!user) {
       res.status(404).json({ message: "Пользователь не найден" });
       return;
     }
 
-    // 5. Создаем новый Access Token
     const payload = { id: user.id, email: user.email, name: user.name };
     const accessToken = jwt.sign(payload, JWT_SECRET, {
       expiresIn: "15m", // Новый Access Token действует 15 минут
     });
 
-    // Отправляем новый Access Token клиенту
     res.json({ accessToken: accessToken });
   } catch (error) {
     console.error("Ошибка при обновлении токена:", error);
@@ -157,85 +157,74 @@ const refresh = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-const authenticateJWT = (req: any, res: Response, next: express.NextFunction) => {
-  const authHeader = req.headers.authorization;
-  if (authHeader) {
-    const token = authHeader.split(' ')[1]; // Bearer <token>
-    //  **Здесь должна быть ваша логика проверки токена JWT**
-    //  Например, используя библиотеку jsonwebtoken:
-    // const decoded = jwt.verify(token, yourSecretKey);
-    // req.user = decoded; // Добавляем информацию о пользователе в req.user
-    req.user = {id: 1, email: 'test@example.com', name: 'Test User'}; // Заглушка
-    next();
-  } else {
-    res.status(401).json({ message: 'Необходимо авторизоваться' });
-  }
-};
-
-const me = async (req: Request, res: Response): Promise<void>=> {
+const me = async (req: Request, res: Response): Promise<void> => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
-      res.json({ message: 'Вы вошли как гость' });
+      res.json({ message: "Вы вошли как гость" });
       return;
     }
-    const token = authHeader.split(' ')[1];
+    const token = authHeader.split(" ")[1];
 
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {id: number};; // Ваш секретный ключ
-      const userId = decoded.id; // Должно быть поле id в вашем токене
+      const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
+        id: number;
+      }; 
+      const userId = decoded.id; 
       const user = await User.findByPk(userId);
       if (user) {
-        res.json({id: user.id, email: user.email, name: user.name });
+        res.json({ id: user.id, email: user.email, name: user.name, lastName: user.lastName, firstName:
+          user.firstName, patronymic: 
+          user.patronymic, gender: 
+          user.gender, dateOfBirth: 
+          user.dateOfBirth,});
         return;
       } else {
-        res.status(404).json({ message: 'Пользователь не найден' });
+        res.status(404).json({ message: "Пользователь не найден" });
         return;
       }
     } catch (error: any) {
       console.error("Ошибка верификации токена:", error.message);
-      if (error.name === 'TokenExpiredError') {
-          res.status(401).json({ message: 'Токен истек' });
-          return;
-      } else if (error.name === 'JsonWebTokenError') {
-          res.status(401).json({ message: 'Неверный токен' });
-          return ;
+      if (error.name === "TokenExpiredError") {
+        res.status(401).json({ message: "Токен истек" });
+        return;
+      } else if (error.name === "JsonWebTokenError") {
+        res.status(401).json({ message: "Неверный токен" });
+        return;
       }
-      res.status(401).json({ message: 'Ошибка авторизации' });
-      return ;
+      res.status(401).json({ message: "Ошибка авторизации" });
+      return;
     }
   } catch (error) {
     console.error("Ошибка сервера:", error);
-    res.status(500).json({ message: 'Ошибка сервера' });
+    res.status(500).json({ message: "Ошибка сервера" });
   }
-   
-}
+};
 
 const logout = async (req: Request, res: Response): Promise<void> => {
   const { refreshToken } = req.body;
 
   if (!refreshToken) {
-    res.status(400).json({ message: 'Refresh token не предоставлен' });
+    res.status(400).json({ message: "Refresh token не предоставлен" });
     return;
   }
 
   try {
-    // Удалите refresh token из базы данных
-    const deletedToken = await RefreshToken.destroy({ where: { token: refreshToken } });
+    const deletedToken = await RefreshToken.destroy({
+      where: { token: refreshToken },
+    });
 
     if (deletedToken === 0) {
-      // Если токен не найден, можно вернуть ошибку, или просто считать, что выход выполнен успешно
-      res.status(404).json({ message: 'Refresh token не найден' });
+      res.status(404).json({ message: "Refresh token не найден" });
       return;
     }
 
-    res.json({ message: 'Выход выполнен успешно' });
+    res.json({ message: "Выход выполнен успешно" });
   } catch (error) {
-    console.error('Ошибка при выходе из аккаунта:', error);
-    res.status(500).json({ message: 'Ошибка сервера' });
+    console.error("Ошибка при выходе из аккаунта:", error);
+    res.status(500).json({ message: "Ошибка сервера" });
   }
-}
+};
 
-
-export {register, login, refresh, me, logout};
+export { register, login, refresh, me, logout };
 export default router;

@@ -23,42 +23,28 @@
     display:grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 10px;
-    justify-content: start; /* Распределяем элементы по ширине */
+    justify-content: start; 
     align-items: left;
-  }
-
-  .econtainer {
-    display: flex;
-    flex-wrap: wrap; /* Разрешаем перенос элементов на новую строку */
-    justify-content: space-between; /* Выравниваем элементы по левому краю */
-  }
-  
-  .item {
-    flex-basis: calc(20% - 10px); /* 100% / 5 = 20%, -10px для компенсации gap */
-   // margin: 5px; /* Добавляем небольшой отступ между элементами */
-    background-color: #fff;
-    border-radius: 8px;
-    padding: 15px;
-    text-align: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-    width: 600px;
-    margin: 0 auto;
-    padding: 0 20px;
-    font-size: 14px;
   }
 
   .eventsGrid[style*="--grid-item-count: 2"] {
     display: flex;
-    grid-template-columns: repeat(2, 1fr); /* Задаем 2 колонки */
-    gap: 30px; /* Устанавливаем расстояние между элементами 30px */
-    justify-content: start;
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 30px; 
+    justify-content: space-between;
   }
 
   .eventsGrid[style*="--grid-item-count: 3"] {
     display: flex;
-    grid-template-columns: repeat(2, 1fr); /* Задаем 2 колонки */
-    gap: 30px; /* Устанавливаем расстояние между элементами 30px */
-    justify-content: start;
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 30px; 
+    justify-content: space-between;
+  }
+  .eventsGrid[style*="--grid-item-count: 4"] {
+    display: flex;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px; 
+    justify-content: space-between;
   }
   
   .container {
@@ -204,12 +190,10 @@
   }
   
   .descriptionText {
-   
     color: rgb(223, 176, 176);
     width: 100%;
     font-weight: 600;
-    font-size: 30px;
-    
+    font-size: 30px; 
   }
 
   .aboutUs {
@@ -220,15 +204,15 @@
     background-color: white;
     text-align: left;
     padding: 20px;
-    border: 1px solid #ccc; /* Добавляем рамку, как на картинке */
-    border-radius: 5px; /* Закругляем углы */
-    margin-bottom: 20px; /* Добавляем отступ снизу, чтобы отделить от "Мои мероприятия" */
+    border: 1px solid #ccc; 
+    border-radius: 5px; 
+    margin-bottom: 20px; 
   }
   
   .profileInfo p {
-    margin: 5px 0; /* Уменьшаем отступы сверху и снизу у параграфов */
-    font-size: 16px; /* Задаем размер шрифта */
-    color: #333; /* Задаем цвет текста */
+    margin: 5px 0; 
+    font-size: 16px; 
+    color: #333; 
   }
 
   .upr {
@@ -245,13 +229,13 @@
 
   .createb {
     margin-top:10px;
-    width: 200px;
+    width: 250px;
     padding: 10px;
     color:  #ffffff;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 16px;
     background-color: #dbc2c2;
   }
 
@@ -332,7 +316,7 @@
   }
 
   .bmcontainer {
-    position: relative; /* Важно для позиционирования меню абсолютно */
+    position: relative; 
   }
 
   .burgerButton {
@@ -341,17 +325,13 @@
   border: none;
   cursor: pointer;
   padding: 0.5em;
-  z-index: 2; /*  Обеспечивает отображение кнопки поверх меню, когда оно открыто. */
+  z-index: 2;
   }
 
   .map {
     height: 300px;
   }
 }
-
-
-
-
 
 .mobileMenu {
   position: relative; 
@@ -410,4 +390,137 @@ height: 40px;
   text-decoration: underline;
   font-size: 20px;
   cursor: pointer;
+}
+
+.profileContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  font-family: sans-serif;
+}
+
+.profileCard {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  width: 400px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.profileCard h3 {
+  text-align: center;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.profileCard p {
+  margin: 5px 0;
+  color: #555;
+}
+
+.profileActions {
+  display: flex;
+  gap: 10px;
+}
+
+.editButton,
+.deleteButton {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  color: white;
+}
+
+.editButton {
+  background-color: #4CAF50;
+}
+
+.deleteButton {
+  background-color: #f44336;
+}
+
+.editButton:hover,
+.deleteButton:hover {
+  opacity: 0.8;
+}
+
+/* Modal Styles */
+
+ .modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); 
+  display: flex;
+ 
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; 
+}
+
+.modal {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  width: 400px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal h3 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.inputField,
+.selectField {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.selectField {
+  appearance: none; 
+  background-image: url('data:image/svg+xml;utf8,<svg fill="%23333" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px top 50%;
+  background-size: 16px;
+}
+
+.modalButtons {
+  display: flex;
+  justify-content: space-around;
+}
+
+.saveButton,
+.cancelButton {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  color: white;
+}
+
+.saveButton {
+  background-color: #4CAF50;
+}
+
+.cancelButton {
+  background-color: #999;
+}
+
+.saveButton:hover,
+.cancelButton:hover {
+  opacity: 0.8;
 }
